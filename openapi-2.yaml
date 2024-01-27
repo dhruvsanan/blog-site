@@ -1,0 +1,696 @@
+openapi: 3.0.0
+info:
+  title: Blog Api
+  version: 1.0.0
+  description: >-
+    <h2>ER Diagram</h2>
+    <img
+    src="https://mermaid.ink/img/pako:eNq9VNtugzAM_RUrz-0P8LqqT500aZcnJBQRt42aEOQEsYn23-sEqhY2qm2aBhKEc2wfB47pROkUikwgrbTckbR5BXy8eiQ4HpdL18GT8wEyyAWfiUzAQG70AWfJB2ctVuPk28prZ4xrZ9PfNLazuV-SXb8E0Kyq1eXJB9LVDtBKbSZYQwamEBeqpMUJXEvvW0cqYRduJQO-aIugeFGUhHwbZE_XDc20FfA9QNDB4BiJl89t3taQTdg7-mEnw9e4_45G4jGi5v6La9iv1aNRZqT_Uiba4h9keufeEYommghtUw6qYuC-LSkWwiKxeRUPatLMRdgjO1TEAVCSDnEIYhxvxj1_VKXIAjW4EE0d6w2jLbKtNJ5RVDo4euwnP_0ATmcmKjp5?type=png"
+    />
+
+    <h2> Error Codes </h2> <table> 
+      <thead>
+        <th>Resource</th> 
+        <th>Error Code</th> 
+        <th>Message</th>
+      </thead> 
+      <tbody> 
+      <tr>
+        <td>User</td> 
+        <td>BE1001</td> 
+        <td>Username is required</td>
+      </tr> 
+      <tr>
+        <td>User</td> 
+        <td>BE1002</td> 
+        <td>Password is required</td>
+      </tr> 
+      <tr>
+        <td>User</td> 
+        <td>BE1003</td> 
+        <td>Email is required</td>
+      </tr> 
+      <tr>
+        <td>User</td> 
+        <td>BE1004</td> 
+        <td>invalid email</td>
+      </tr> 
+      <tr>
+        <td>User</td> 
+        <td>BE1005</td> 
+        <td>Duplicate username</td>
+      </tr> 
+      <tr>
+        <td>User</td> 
+        <td>BE1006</td> 
+        <td>Duplicate email</td>
+      </tr> 
+      <tr>
+        <td>User</td> 
+        <td>BE1007</td> 
+        <td>User does not exist</td>
+      </tr> 
+      <tr>
+        <td>Post</td> 
+        <td>BE2001</td> 
+        <td>Title is required</td>
+      </tr> 
+      <tr>
+        <td>Post</td> 
+        <td>BE2002</td> 
+        <td>Description is required</td>
+      </tr> 
+      <tr>
+        <td>Post</td> 
+        <td>BE2003</td> 
+        <td>User Id is required</td>
+      </tr> 
+      <tr>
+        <td>Post</td> 
+        <td>BE2004</td> 
+        <td>Author does not exists</td>
+      </tr> 
+      <tr>
+        <td>Post</td> 
+        <td>BE2005</td> 
+        <td>Post does not exist</td>
+      </tr> 
+      <tr>
+        <td>Home</td> 
+        <td>BE3001</td> 
+        <td>You need to follow more users</td>
+      </tr>
+      <tr>
+        <td>Home</td> 
+        <td>BE3002</td> 
+        <td>people you follow have not posted yet. Follow more people</td>
+      </tr>
+      </ tbody> 
+    </table>
+    <h2>Note:</h2>
+    <h3> You cannot add or update image with the following api. This include images for posts and user profile picture </h3>
+servers:
+  - url: http://127.0.0.1:5000 for backend
+  - url: http://127.0.0.1:6379 for redis/celery
+  - url: http://127.0.0.1:8080 for frontend
+  - url: http://127.0.0.1:1025 for smpt mail
+paths:
+  /api/user/{username}:
+    summary: Read, Update and Delete user using this end point
+    description: Read, Update and Delete user using this end point
+    get:
+      description: Operation to get a user details
+      parameters: 
+        - in: path
+          name: username 
+          required: true 
+          schema:
+            type: string
+            example: dhruv
+      responses:
+        '200' :
+          description: Success 
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object 
+                properties:
+                  user_id:
+                    type: integer
+                    example: 2 
+                  username:
+                    type: string
+                    example: dhruv 
+                  email:
+                    type: string
+                    example: dhruv@email.com
+                  password:
+                    type: string
+                    example: 12345asdf 
+                  url:
+                    type: string
+                    example: image.png
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.
+    put:
+      description: Operation to update the user detail
+      parameters:
+        - in: path
+          name: username 
+          required: true 
+          schema:
+            type: string
+            example: dhruv
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                  new_username:
+                    type: string
+                    example: dhruv 
+                  new_email:
+                    type: string
+                    example: dhruv@email.com
+                  password:
+                    type: string
+                    example: 12345asdg 
+      responses:
+        '200' :
+          description: Success 
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object 
+                properties:
+                  user_id:
+                    type: integer
+                    example: 201 
+                  username:
+                    type: string
+                    example: dhruv 
+                  email:
+                    type: string
+                    example: dhruv@email.com
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.
+    delete:
+      description: Operation to delete the user.
+      parameters:
+        - in: path
+          name: username 
+          required: true 
+          schema:
+            type: string
+            example: dhruv
+      responses:
+        '200' :
+          description: Successfully Deleted.
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string  
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.  
+  /api/user:
+    description: End point to create a user.
+    post:
+      description: Operation to create the user      
+      requestBody: 
+        content:
+          application/json:
+            schema:
+                title: user object
+                type: object 
+                properties:
+                  username:
+                    type: string
+                    example: dhruv 
+                  email:
+                    type: string
+                    example: dhruv@email.com
+                  password:
+                    type: string
+                    example: 12345asdg 
+      responses:
+        '200' :
+          description: Successfully Created User.
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string  
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.             
+  /api/post/{post_id}:
+    description: Read, Update and Delete post using this end point
+    get:
+      description: Operation to get a post details
+      parameters: 
+        - in: path
+          name: post_id 
+          required: true 
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200' :
+          description: Success 
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object 
+                properties:
+                  post_id:
+                    type: integer
+                    example: 2 
+                  title:
+                    type: string
+                    example: this is title
+                  text:
+                    type: string
+                    example: this is Description
+                  author:
+                    type: integer
+                    example: 1 
+                  url:
+                    type: string
+                    example: image.png
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.          
+    put:
+      description: Operation to update the post detail
+      parameters:
+        - in: path
+          name: post_id 
+          required: true 
+          schema:
+            type: integer
+            example: 2
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                  title:
+                    type: string
+                    example: this is title
+                  text:
+                    type: string
+                    example: this is Description
+                  author:
+                    type: integer
+                    example: 3
+      responses:
+        '200' :
+          description: Success 
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object 
+                properties:
+                  id:
+                    type: integer
+                    example: 201 
+                  data:
+                    type: string
+                    example: dhruv 
+                  user_id:
+                    type: integer
+                    example: 2
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.
+    delete:
+      description: Operation to delete the post.
+      parameters:
+        - in: path
+          name: post_id 
+          required: true 
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200' :
+          description: Successfully Deleted.
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string  
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.          
+  /api/post:
+    description: End point to create a post.
+    post:
+      description: Operation to create the post      
+      requestBody: 
+        content:
+          application/json:
+            schema:
+                title: post object
+                type: object 
+                properties:
+                  title:
+                    type: string
+                    example: this is title
+                  text:
+                    type: string
+                    example: this is Description
+                  author:
+                    type: integer
+                    example: 3
+      responses:
+        '200' :
+          description: Successfully Created User.
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string  
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.           
+  /api/posts/{username}:
+    description: Read all the posts shown in feed
+    get:
+      description: Operation to get all the posts shown in feed
+      parameters: 
+        - in: path
+          name: username 
+          required: true 
+          schema:
+            type: string
+            example: dhruv
+      responses:
+        '200' :
+          description: Success 
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object 
+                properties:
+                  post_id:
+                    type: integer
+                    example: 2 
+                  title:
+                    type: string
+                    example: this is title
+                  text:
+                    type: string
+                    example: this is Description
+                  author:
+                    type: integer
+                    example: 1 
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.          
+  /api/posts:
+    description: End point to get a feed of user.
+    post:
+      description: Operation to create the post      
+      requestBody: 
+        content:
+          application/json:
+            schema:
+                title: post object
+                type: object 
+                properties:
+                  title:
+                    type: string
+                    example: this is title
+                  text:
+                    type: string
+                    example: this is Description
+                  author:
+                    type: integer
+                    example: 3
+      responses:
+        '200' :
+          description: Successfully Created User.
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string  
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error. 
+  /api/comment/{comment_id}:
+    description: Read, Update and Delete comment using this end point
+    get:
+      description: Operation to get a comment details
+      parameters: 
+        - in: path
+          name: comment_id 
+          required: true 
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200' :
+          description: Success 
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object 
+                properties:
+                  comment_id:
+                    type: integer
+                    example: 2 
+                  title:
+                    type: string
+                    example: this is title
+                  text:
+                    type: string
+                    example: this is Description
+                  author:
+                    type: integer
+                    example: 1 
+                  url:
+                    type: string
+                    example: image.png
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.          
+    put:
+      description: Operation to update the comment detail
+      parameters:
+        - in: path
+          name: comment_id 
+          required: true 
+          schema:
+            type: integer
+            example: 2
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                  text:
+                    type: string
+                    example: this is Description
+                  author:
+                    type: integer
+                    example: 3
+      responses:
+        '200' :
+          description: Success 
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object 
+                properties:
+                  id:
+                    type: integer
+                    example: 201 
+                  data:
+                    type: string
+                    example: dhruv 
+                  author_id:
+                    type: integer
+                    example: 2
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.
+    delete:
+      description: Operation to delete the comment.
+      parameters:
+        - in: path
+          name: comment_id 
+          required: true 
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200' :
+          description: Successfully Deleted.
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string  
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.          
+  /api/comment:
+    description: End point to create a comment.
+    comment:
+      description: Operation to create the comment      
+      requestBody: 
+        content:
+          application/json:
+            schema:
+                title: comment object
+                type: object 
+                properties:
+                  text:
+                    type: string
+                    example: this is Description
+                  author:
+                    type: integer
+                    example: 3
+      responses:
+        '200' :
+          description: Successfully Created User.
+        '400':
+          description: Bad request.
+          content:
+            application/ ison:
+              schema:
+                type: object 
+                properties:
+                  error_code:
+                    type: string 
+                  error_message:
+                    type: string  
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.
+
+          
+          

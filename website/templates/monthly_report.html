@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Monthly Report</title>
+  </head>
+  <body>
+    <h1>Monthly Report of {{ username }}</h1>
+    {% if data.created_blogs %}
+    <h2>Created Blogs</h2>
+    <ul>
+        {% for post in data.created_blogs %}
+        <div id="posts">
+          <div class="card border-dark">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              
+              <div>
+                <h2> Total Likes:{{ post.likes|length }}</h2>
+              </div>  
+            </div>
+            <div class="card-body">
+              <h4 class="card-title">{{post.title}}</h4>
+              <br />
+              <p class="card-text">{{post.text}}</p>
+              <br />
+                {% if post.url %}
+                <img src=`http://127.0.0.1:5000/{{ post.url }}` class="img-fluid">
+                <br />
+                {% endif %}
+                <div class="collapse" id="comments-{{post.id}}">
+                    <h2>Comments:</h2>
+                    <div class="card">
+                      <div class="card-body">
+                        {% if post.comments|length > 0 %}
+                        {% for comment in post.comments %}
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div>
+                              {{comment.user.username}}: {{comment.text}}
+                          </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <small class="text-muted">No Comments</small>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+            <div class="card-footer text-muted">{{post.date_created}}</div>
+             <br>
+        </div>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p>No Post Created previous month</p>
+    {% endif %}
+
+    {% if data.comments is not none %}
+    <h2>Comments you commented</h2>
+    <ul>
+        {% for comment in data.comments %}
+        <li>{{ comment.text }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>You have no Comments commented</p>
+    {% endif %}
+
+    {% if data.likes %}
+    <h2>Total number of posts you liked are:</h2><h2>{{ data.likes }}</h2>
+    {% else %}
+    <p>No Posts Liked</p>
+    {% endif %}
+  </body>
+</html>
